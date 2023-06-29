@@ -11,8 +11,6 @@ use Filament\Notifications\Notification;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class VersionsRelationManager extends RelationManager
 {
@@ -35,6 +33,9 @@ class VersionsRelationManager extends RelationManager
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('version'),
+                Tables\Columns\TextColumn::make('created_at')
+                    ->label('Imported')
+                    ->since(),
             ])
             ->filters([
                 //

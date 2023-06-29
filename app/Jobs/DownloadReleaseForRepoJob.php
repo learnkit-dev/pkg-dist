@@ -85,7 +85,7 @@ class DownloadReleaseForRepoJob implements ShouldQueue
         return $config;
     }
 
-    private function downloadTarball(PackageInterface $package)
+    private function downloadTarball(PackageInterface $package): void
     {
         $path = storage_path('app/repos/' . Str::of($this->repository->name)->replace('/', '_') . '_' . Str::of($package->getVersion())->replace('.', '-') . '.zip');
         $zip = fopen($path, 'w');
@@ -104,8 +104,8 @@ class DownloadReleaseForRepoJob implements ShouldQueue
         curl_setopt($curl, CURLOPT_USERAGENT, 'Chrome/64.0.3282.186 Safari/537.36');
         curl_setopt($curl, CURLOPT_HTTPHEADER, array('Authorization: token ' . config('repomap.github_personal_token')));
         curl_setopt($curl, CURLOPT_FOLLOWLOCATION, 1);
-        $httpcode = curl_getinfo($curl , CURLINFO_HTTP_CODE);
-        $result = curl_exec($curl);
+        //$httpcode = curl_getinfo($curl , CURLINFO_HTTP_CODE);
+        //$result = curl_exec($curl);
         curl_close($curl);
     }
 }

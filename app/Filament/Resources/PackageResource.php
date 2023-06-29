@@ -41,6 +41,9 @@ class PackageResource extends Resource
                 Tables\Columns\TextColumn::make('versions_count')
                     ->label('Versions')
                     ->counts('versions'),
+                Tables\Columns\TextColumn::make('licenses_count')
+                    ->label('Licenses')
+                    ->counts('licenses'),
             ])
             ->filters([
                 //
