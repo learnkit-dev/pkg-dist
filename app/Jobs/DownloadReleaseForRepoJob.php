@@ -14,7 +14,6 @@ use Illuminate\Queue\SerializesModels;
 use Composer\Config;
 use Composer\Factory;
 use Composer\IO\BufferIO;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -32,23 +31,28 @@ class DownloadReleaseForRepoJob implements ShouldQueue
             $io = $this->createIO();
 
             $repository = current(RepositoryFactory::defaultRepos($io, $this->createConfig($io)));
-            $json = ['packages' => []];
             $package = $repository->findPackage($this->repository->package_name, $this->tag);
 
             $data = (new ArrayDumper())->dump($package);
 
-            $json['packages'][$package->getPrettyName()][$package->getPrettyVersion()] = $data;
+            $data['dist'] = [
+                'type' => 'zip',
+                'url' => route('composer.tarball', ['repository' => $this->repository, 'version' => base64_encode($package->getVersion())]),
+                'reference' => '',
+                'shasum' => '',
+            ];
+
+            unset($data['source']);
 
             $this->repository
                 ->versions()
                 ->create([
                     'version' => $package->getPrettyVersion(),
                     'version_normalized' => $package->getVersion(),
+                    'json_file' => $data,
                 ]);
 
             $this->downloadTarball($package);
-
-            $this->saveJsonFile($package, $json);
         } catch (\Throwable $exception) {
             ray($exception);
         }
@@ -103,10 +107,5 @@ class DownloadReleaseForRepoJob implements ShouldQueue
         $httpcode = curl_getinfo($curl , CURLINFO_HTTP_CODE);
         $result = curl_exec($curl);
         curl_close($curl);
-    }
-
-    private function saveJsonFile(PackageInterface $package, array $json)
-    {
-        Storage::write('repos/' . Str::of($this->repository->name)->replace('/', '_') . '.json', json_encode($json));
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\PackageResource\RelationManagers;
 
+use App\Filament\Actions\SelectBranch;
 use App\Filament\Actions\SelectVersion;
 use App\Jobs\DownloadReleaseForRepoJob;
 use Filament\Forms;
@@ -43,11 +44,30 @@ class VersionsRelationManager extends RelationManager
                     ->label('Add version')
                     ->modalWidth('md')
                     ->form([
+                        Forms\Components\Radio::make('type')
+                            ->default('tag')
+                            ->reactive()
+                            ->options([
+                                'tag' => 'Release',
+                                'branch' => 'Branch',
+                            ]),
                         SelectVersion::make('tag')
+                            ->visible(fn ($get) => $get('type') === 'tag')
+                            ->required()
                             ->label('Tag'),
+                        SelectBranch::make('branch')
+                            ->visible(fn ($get) => $get('type') === 'branch')
+                            ->required()
+                            ->label('Branch'),
                     ])
                     ->action(function ($data) {
-                        dispatch(new DownloadReleaseForRepoJob($this->getOwnerRecord(), $data['tag']));
+                        $tag = $data['tag'] ?? null;
+
+                        if ($data['type'] === 'branch') {
+                            $tag = 'dev-' . $data['branch'];
+                        }
+
+                        dispatch(new DownloadReleaseForRepoJob($this->getOwnerRecord(), $tag));
 
                         Notification::make()
                             ->success()

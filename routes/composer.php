@@ -7,27 +7,19 @@ use Illuminate\Support\Str;
 
 Route::get('/packages.json', function () {
     $packages = Package::all()
-        ->flatMap(function ($repository) {
-            // Get the file
-            $path = 'repos/' . Str::of($repository->name)->replace('/', '_') . '.json';
+        ->mapWithKeys(function ($package) {
+            $versions = $package
+                ->versions
+                ->mapWithKeys(function ($version) {
+                    return [
+                        $version->version_normalized => $version->json_file,
+                    ];
+                })
+                ->toArray();
 
-            $file = \Illuminate\Support\Facades\Storage::get($path);
-            $json = json_decode($file, true);
-
-            return collect($json['packages'])
-                ->map(function ($package) use ($repository) {
-                    return collect($package)
-                        ->map(function ($version) use ($repository) {
-                            $version['dist'] = [
-                                'type' => 'zip',
-                                'url' => route('composer.tarball', ['repository' => $repository, 'version' => base64_encode($version['version_normalized'])]),
-                                'reference' => '',
-                                'shasum' => '',
-                            ];
-
-                            return $version;
-                        });
-                });
+            return [
+                $package->package_name => $versions,
+            ];
         })
         ->toArray();
 

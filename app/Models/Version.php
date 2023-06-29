@@ -9,6 +9,10 @@ class Version extends Model
 {
     protected $guarded = [];
 
+    protected $casts = [
+        'json_file' => 'json',
+    ];
+
     public function package(): BelongsTo
     {
         return $this->belongsTo(Package::class);
