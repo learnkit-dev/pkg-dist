@@ -16,7 +16,7 @@ class SelectVersion extends Select
 
             $result = Http::withHeaders([
                 'Authorization' => 'Bearer ' . config('repomap.github_personal_token'),
-            ])->get('https://api.github.com/repos/' . $repo->name . '/releases');
+            ])->get('https://api.github.com/repos/' . $repo->name . '/releases?per_page=100');
 
             return collect($result->json())
                 ->pluck('name', 'tag_name')
