@@ -26,9 +26,9 @@ class LicenseResource extends Resource
                 Forms\Components\Section::make('General')
                     ->columns()
                     ->schema([
-                        Forms\Components\Select::make('repository_id')
-                            ->label('Repository')
-                            ->relationship('repository', 'name')
+                        Forms\Components\Select::make('package_id')
+                            ->label('Package')
+                            ->relationship('package', 'name')
                             ->required(),
 
                         Forms\Components\TextInput::make('key')
