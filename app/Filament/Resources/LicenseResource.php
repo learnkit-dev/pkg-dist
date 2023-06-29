@@ -42,7 +42,7 @@ class LicenseResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('repository.name')
+                Tables\Columns\TextColumn::make('package.name')
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('key')
