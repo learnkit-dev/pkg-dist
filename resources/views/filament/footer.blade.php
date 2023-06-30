@@ -1,5 +1,5 @@
 <div class="p-4">
     <p class="text-gray-500 text-sm">
-        &copy; 2023 by Airdesk
+        &copy; {{ now()->year }} by pkgdist
     </p>
 </div>

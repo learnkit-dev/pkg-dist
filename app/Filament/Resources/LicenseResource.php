@@ -5,12 +5,14 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\LicenseResource\Pages;
 use App\Filament\Resources\LicenseResource\RelationManagers;
 use App\Models\License;
+use Filament\Facades\Filament;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class LicenseResource extends Resource
@@ -32,7 +34,10 @@ class LicenseResource extends Resource
                     ->schema([
                         Forms\Components\Select::make('package_id')
                             ->label('Package')
-                            ->relationship('package', 'name')
+                            ->relationship('package', 'name', function ($query) {
+                                return $query->whereBelongsTo(Filament::getTenant());
+                            })
+                            ->searchable()
                             ->required(),
 
                         Forms\Components\TextInput::make('key')
@@ -57,6 +62,14 @@ class LicenseResource extends Resource
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
+    }
+
+    public static function scopeEloquentQueryToTenant(Builder $query, Model $tenant): Builder
+    {
+        return $query
+            ->whereHas('package', function ($query) {
+                return $query->whereBelongsTo(Filament::getTenant());
+            });
     }
 
     public static function getPages(): array
