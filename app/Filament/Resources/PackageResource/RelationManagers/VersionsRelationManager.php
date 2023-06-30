@@ -5,6 +5,7 @@ namespace App\Filament\Resources\PackageResource\RelationManagers;
 use App\Filament\Actions\SelectBranch;
 use App\Filament\Actions\SelectVersion;
 use App\Jobs\DownloadReleaseForRepoJob;
+use Composer\Semver\VersionParser;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Notifications\Notification;
@@ -65,7 +66,7 @@ class VersionsRelationManager extends RelationManager
                         $tag = $data['tag'] ?? null;
 
                         if ($data['type'] === 'branch') {
-                            $tag = 'dev-' . $data['branch'];
+                            $tag = (new VersionParser)->normalizeBranch($data['branch']);
                         }
 
                         dispatch(new DownloadReleaseForRepoJob($this->getOwnerRecord(), $tag));

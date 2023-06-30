@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Actions\DownloadDistFromSource;
 use App\Models\Package;
 use Composer\Package\Dumper\ArrayDumper;
 use Composer\Package\PackageInterface;
@@ -35,13 +36,7 @@ class DownloadReleaseForRepoJob implements ShouldQueue
 
             $data = (new ArrayDumper())->dump($package);
 
-            $data['dist'] = [
-                'type' => 'zip',
-                'url' => route('composer.tarball', ['repository' => $this->repository, 'version' => base64_encode($package->getVersion())]),
-                'reference' => '',
-                'shasum' => '',
-            ];
-
+            unset($data['dist']);
             unset($data['source']);
 
             $this->repository
@@ -88,24 +83,10 @@ class DownloadReleaseForRepoJob implements ShouldQueue
     private function downloadTarball(PackageInterface $package): void
     {
         $path = storage_path('app/repos/' . Str::of($this->repository->name)->replace('/', '_') . '_' . Str::of($package->getVersion())->replace('.', '-') . '.zip');
-        $zip = fopen($path, 'w');
 
-        $curl = curl_init();
-        curl_setopt($curl, CURLOPT_URL, $package->getDistUrl());
-        curl_setopt($curl, CURLOPT_HEADER, 0);
-        curl_setopt($curl, CURLOPT_TIMEOUT, 100);
-        curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 100);
-        curl_setopt($curl, CURLOPT_AUTOREFERER, true);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($curl, CURLOPT_BINARYTRANSFER, true);
-        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 0);
-        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0);
-        curl_setopt($curl, CURLOPT_FILE, $zip);
-        curl_setopt($curl, CURLOPT_USERAGENT, 'Chrome/64.0.3282.186 Safari/537.36');
-        curl_setopt($curl, CURLOPT_HTTPHEADER, array('Authorization: token ' . config('repomap.github_personal_token')));
-        curl_setopt($curl, CURLOPT_FOLLOWLOCATION, 1);
-        //$httpcode = curl_getinfo($curl , CURLINFO_HTTP_CODE);
-        //$result = curl_exec($curl);
-        curl_close($curl);
+        $status = DownloadDistFromSource::download(
+            url: $package->getDistUrl(),
+            path: $path,
+        );
     }
 }

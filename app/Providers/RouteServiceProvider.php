@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Models\Package;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 use Illuminate\Http\Request;
@@ -34,10 +35,16 @@ class RouteServiceProvider extends ServiceProvider
                 ->group(base_path('routes/api.php'));
 
             Route::middleware('api')
+                ->as('composer.')
+                ->domain(config('repomap.package_host'))
                 ->group(base_path('routes/composer.php'));
 
             Route::middleware('web')
                 ->group(base_path('routes/web.php'));
+        });
+
+        Route::bind('packageIdentifier', function ($packageIdentifier) {
+            return Package::firstWhere('slug', $packageIdentifier);
         });
     }
 }

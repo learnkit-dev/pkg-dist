@@ -22,5 +22,7 @@ class SelectVersion extends Select
                 ->pluck('name', 'tag_name')
                 ->toArray();
         });
+
+        $this->searchable();
     }
 }

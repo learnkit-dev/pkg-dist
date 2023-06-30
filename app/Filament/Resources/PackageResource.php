@@ -12,12 +12,15 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Str;
 
 class PackageResource extends Resource
 {
     protected static ?string $model = Package::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-code-bracket-square';
+
+    protected static ?string $navigationGroup = 'Repository';
 
     public static function form(Form $form): Form
     {
@@ -26,7 +29,14 @@ class PackageResource extends Resource
                 Forms\Components\Section::make('General')
                     ->inlineLabel()
                     ->schema([
-                        Forms\Components\TextInput::make('name'),
+                        Forms\Components\TextInput::make('name')
+                            ->reactive()
+                            ->afterStateUpdated(function ($get, $set) {
+                                $set('slug', Str::of($get('name'))->slug());
+                            }),
+                        Forms\Components\TextInput::make('slug')
+                            ->unique('packages', 'slug')
+                            ->required(),
                         Forms\Components\TextInput::make('package_name'),
                     ]),
             ]);
@@ -44,12 +54,6 @@ class PackageResource extends Resource
                 Tables\Columns\TextColumn::make('licenses_count')
                     ->label('Licenses')
                     ->counts('licenses'),
-            ])
-            ->filters([
-                //
-            ])
-            ->actions([
-                Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -71,6 +75,7 @@ class PackageResource extends Resource
         return [
             'index' => Pages\ListPackages::route('/'),
             'create' => Pages\CreatePackage::route('/create'),
+            'view' => Pages\ViewPackage::route('/{record}'),
             'edit' => Pages\EditPackage::route('/{record}/edit'),
         ];
     }

@@ -17,7 +17,11 @@ class LicenseResource extends Resource
 {
     protected static ?string $model = License::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-key';
+
+    protected static ?int $navigationSort = 500;
+
+    protected static ?string $navigationGroup = 'Repository';
 
     public static function form(Form $form): Form
     {
@@ -48,12 +52,6 @@ class LicenseResource extends Resource
                 Tables\Columns\TextColumn::make('key')
                     ->sortable(),
             ])
-            ->filters([
-                //
-            ])
-            ->actions([
-                Tables\Actions\EditAction::make(),
-            ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
@@ -61,18 +59,12 @@ class LicenseResource extends Resource
             ]);
     }
 
-    public static function getRelations(): array
-    {
-        return [
-            //
-        ];
-    }
-
     public static function getPages(): array
     {
         return [
             'index' => Pages\ListLicenses::route('/'),
             'create' => Pages\CreateLicense::route('/create'),
+            'view' => Pages\ViewLicense::route('/{record}'),
             'edit' => Pages\EditLicense::route('/{record}/edit'),
         ];
     }

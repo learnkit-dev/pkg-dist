@@ -22,5 +22,7 @@ class SelectBranch extends Select
                 ->pluck('name', 'name')
                 ->toArray();
         });
+
+        $this->searchable();
     }
 }
