@@ -49,7 +49,9 @@ class DownloadReleaseForRepoJob implements ShouldQueue
 
             $this->downloadTarball($package);
         } catch (\Throwable $exception) {
-            ray($exception);
+            if (app()->bound('sentry')) {
+                app('sentry')->captureException($exception);
+            }
         }
     }
 
