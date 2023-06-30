@@ -57,7 +57,7 @@ class DownloadReleaseForRepoJob implements ShouldQueue
     {
         $io = new BufferIO('', OutputInterface::VERBOSITY_VERY_VERBOSE);
 
-        $io->setAuthentication('github.com', config('repomap.github_personal_token'), 'x-oauth-basic');
+        $io->setAuthentication('github.com', $this->repository->gh_api_key, 'x-oauth-basic');
 
         return $io;
     }
@@ -84,9 +84,12 @@ class DownloadReleaseForRepoJob implements ShouldQueue
     {
         $path = storage_path('app/repos/' . Str::of($this->repository->name)->replace('/', '_') . '_' . Str::of($package->getVersion())->replace('.', '-') . '.zip');
 
+        $key = $this->repository->team?->gh_api_key;
+
         $status = DownloadDistFromSource::download(
             url: $package->getDistUrl(),
             path: $path,
+            key: $key,
         );
     }
 }

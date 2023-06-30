@@ -7,7 +7,7 @@ use Sentry\Breadcrumb;
 
 class DownloadDistFromSource
 {
-    public static function download($url, $path)
+    public static function download($url, $path, $key)
     {
         $zip = fopen($path, 'w');
 
@@ -23,7 +23,7 @@ class DownloadDistFromSource
         curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0);
         curl_setopt($curl, CURLOPT_FILE, $zip);
         curl_setopt($curl, CURLOPT_USERAGENT, config('app.name') . ' / ' . env('APP_DOMAIN'));
-        curl_setopt($curl, CURLOPT_HTTPHEADER, array('Authorization: token ' . config('repomap.github_personal_token')));
+        curl_setopt($curl, CURLOPT_HTTPHEADER, array('Authorization: token ' . $key));
         curl_setopt($curl, CURLOPT_FOLLOWLOCATION, 1);
         $httpcode = curl_getinfo($curl , CURLINFO_HTTP_CODE);
         $result = curl_exec($curl);

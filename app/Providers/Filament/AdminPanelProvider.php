@@ -2,11 +2,13 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Pages\EditTeam;
 use App\Filament\Pages\RegisterTenant;
 use App\Models\Team;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
+use Filament\Navigation\MenuItem;
 use Filament\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
@@ -47,6 +49,11 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->tenant(Team::class, 'slug')
             ->tenantRegistration(RegisterTenant::class)
+            ->tenantMenuItems([
+                MenuItem::make()
+                    ->label('Edit team')
+                    ->url(fn () => EditTeam::getUrl()),
+            ])
             ->middleware([
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,

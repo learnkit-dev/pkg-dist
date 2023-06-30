@@ -13,9 +13,10 @@ class SelectVersion extends Select
 
         $this->options(function () {
             $repo = $this->getLivewire()->ownerRecord;
+            $team = $repo->team;
 
             $result = Http::withHeaders([
-                'Authorization' => 'Bearer ' . config('repomap.github_personal_token'),
+                'Authorization' => 'Bearer ' . $team->gh_api_key,
             ])->get('https://api.github.com/repos/' . $repo->name . '/releases?per_page=100');
 
             return collect($result->json())

@@ -9,6 +9,10 @@ class Team extends Model
 {
     protected $guarded = [];
 
+    protected $casts = [
+        'gh_api_key' => 'encrypted',
+    ];
+
     public function users(): BelongsToMany
     {
         return $this->belongsToMany(User::class);
