@@ -69,6 +69,10 @@ class VersionsRelationManager extends RelationManager
                             $tag = (new VersionParser)->normalizeBranch($data['branch']);
                         }
 
+                        if ($data['type'] === 'tag') {
+                            $tag = (new VersionParser)->normalize($data['tag']);
+                        }
+
                         dispatch(new DownloadReleaseForRepoJob($this->getOwnerRecord(), $tag));
 
                         Notification::make()

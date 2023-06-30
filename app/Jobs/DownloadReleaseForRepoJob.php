@@ -16,6 +16,7 @@ use Composer\Config;
 use Composer\Factory;
 use Composer\IO\BufferIO;
 use Illuminate\Support\Str;
+use Sentry\State\Scope;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class DownloadReleaseForRepoJob implements ShouldQueue
@@ -28,6 +29,12 @@ class DownloadReleaseForRepoJob implements ShouldQueue
 
     public function handle(): void
     {
+        \Sentry\configureScope(function (Scope $scope): void {
+            $scope->setTag('package.id', $this->repository->id);
+            $scope->setTag('package.name', $this->repository->package_name);
+            $scope->setTag('package.version', $this->tag);
+        });
+
         try {
             $io = $this->createIO();
 
@@ -59,7 +66,9 @@ class DownloadReleaseForRepoJob implements ShouldQueue
     {
         $io = new BufferIO('', OutputInterface::VERBOSITY_VERY_VERBOSE);
 
-        $io->setAuthentication('github.com', $this->repository->gh_api_key, 'x-oauth-basic');
+        $team = $this->repository->team;
+
+        $io->setAuthentication('github.com', $team->gh_api_key, 'x-oauth-basic');
 
         return $io;
     }
