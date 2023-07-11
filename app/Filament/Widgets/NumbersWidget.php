@@ -43,26 +43,7 @@ class NumbersWidget extends StatsOverviewWidget
                 ->url(LicenseResource::getUrl()),
             StatsOverviewWidget\Card::make('Versions', $versionsCount)
                 ->icon('heroicon-o-rocket-launch'),
-            StatsOverviewWidget\Card::make('Storage', $this->formatSize($storageSize)),
+            StatsOverviewWidget\Card::make('Storage', formatFilesize($storageSize)),
         ];
-    }
-
-    protected function formatSize($size): string
-    {
-        $kb = $size / 1000;
-
-        if ($kb < 1000) {
-            return $kb . ' kb';
-        }
-
-        $mb = $kb / 1000;
-
-        if ($mb < 1000) {
-            return $mb . ' mb';
-        }
-
-        $gb = $mb / 1000;
-
-        return $gb . ' gb';
     }
 }
