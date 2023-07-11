@@ -49,17 +49,16 @@ class DownloadReleaseForRepoJob implements ShouldQueue
             unset($data['dist']);
             unset($data['source']);
 
+            $size = $this->downloadTarball($package);
+
             $this->version
                 ->update([
                     'status' => VersionStatus::Published,
                     'json_file' => $data,
                     'last_synced_at' => now(),
+                    'size' => $size,
                 ]);
-
-            $this->downloadTarball($package);
         } catch (\Throwable $exception) {
-            ray($exception);
-
             if (app()->bound('sentry')) {
                 app('sentry')->captureException($exception);
             }
@@ -95,7 +94,7 @@ class DownloadReleaseForRepoJob implements ShouldQueue
         return $config;
     }
 
-    private function downloadTarball(PackageInterface $package): void
+    private function downloadTarball(PackageInterface $package)
     {
         $key = $this->repository->team?->gh_api_key;
 
@@ -111,6 +110,8 @@ class DownloadReleaseForRepoJob implements ShouldQueue
         ->sink($path)
         ->get($package->getDistUrl());
 
+        $size = Storage::disk('local')->size('repos/' . $filename);
+
         // Upload to R2
         $contents = Storage::disk('local')->get('repos/' . $filename);
         Storage::disk('r2')->put($filename, $contents);
@@ -119,5 +120,7 @@ class DownloadReleaseForRepoJob implements ShouldQueue
         if (file_exists($path)) {
             unlink($path);
         }
+
+        return $size;
     }
 }
