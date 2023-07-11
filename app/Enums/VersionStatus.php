@@ -2,7 +2,12 @@
 
 namespace App\Enums;
 
-enum VersionStatus: string
+use Closure;
+use Filament\Support\Contracts\HasColor;
+use Filament\Support\Contracts\HasLabel;
+use Hamcrest\SelfDescribing;
+
+enum VersionStatus: string implements HasLabel, HasColor
 {
     case Syncing = 'syncing';
 
@@ -11,4 +16,20 @@ enum VersionStatus: string
     case Paused = 'paused';
 
     case Failed = 'failed';
+
+    public function getColor(): string|array|null
+    {
+        return match ($this) {
+            self::Syncing => 'warning',
+            self::Published => 'success',
+        };
+    }
+
+    public function getLabel(): ?string
+    {
+        return match ($this) {
+            self::Syncing => 'Syncing',
+            self::Published => 'Published',
+        };
+    }
 }

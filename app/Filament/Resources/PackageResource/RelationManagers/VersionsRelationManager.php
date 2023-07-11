@@ -37,7 +37,8 @@ class VersionsRelationManager extends RelationManager
             ->poll('10s')
             ->columns([
                 Tables\Columns\TextColumn::make('version'),
-                Tables\Columns\TextColumn::make('status'),
+                Tables\Columns\TextColumn::make('status')
+                    ->badge(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Imported')
                     ->since(),
