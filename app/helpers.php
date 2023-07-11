@@ -5,17 +5,17 @@ if (! function_exists('formatFilesize')) {
         $kb = $size / 1000;
 
         if ($kb < 1000) {
-            return $kb . ' kb';
+            return $kb . ' KB';
         }
 
         $mb = $kb / 1000;
 
         if ($mb < 1000) {
-            return $mb . ' mb';
+            return $mb . ' MB';
         }
 
         $gb = $mb / 1000;
 
-        return $gb . ' gb';
+        return $gb . ' GB';
     }
 }
