@@ -47,13 +47,17 @@ class PackageResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name'),
-                Tables\Columns\TextColumn::make('package_name'),
+                Tables\Columns\TextColumn::make('name')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('package_name')
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('versions_count')
                     ->label('Versions')
+                    ->sortable()
                     ->counts('versions'),
                 Tables\Columns\TextColumn::make('licenses_count')
                     ->label('Licenses')
+                    ->sortable()
                     ->counts('licenses'),
             ])
             ->bulkActions([
