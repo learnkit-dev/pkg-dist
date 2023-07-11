@@ -49,7 +49,10 @@ class LicensesRelationManager extends RelationManager
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('key'),
-                Tables\Columns\TextColumn::make('username'),
+                Tables\Columns\TextColumn::make('username')
+                    ->getStateUsing(function ($record) {
+                        return $record->username ?? 'Not used yet';
+                    }),
                 Tables\Columns\IconColumn::make('is_revoked')
                     ->label('Revoked')
                     ->boolean(),
@@ -66,6 +69,8 @@ class LicensesRelationManager extends RelationManager
                 Action::make('extend')
                     ->label('Extend')
                     ->modalWidth('sm')
+                    ->color('secondary')
+                    ->icon('heroicon-m-calendar')
                     ->modalDescription('Extending the license is easy. Just fill out the following form.')
                     ->form([
                         Forms\Components\Radio::make('period')
@@ -100,6 +105,7 @@ class LicensesRelationManager extends RelationManager
                 Action::make('revoke')
                     ->label('Revoke')
                     ->color('danger')
+                    ->icon('heroicon-m-stop')
                     ->requiresConfirmation()
                     ->visible(fn ($record, $livewire) => ! $record->is_revoked && $livewire->pageClass === ViewPackage::class)
                     ->action(fn ($record) => $record->update(['is_revoked' => true])),

@@ -54,6 +54,13 @@ class LicenseResource extends Resource
                 Tables\Columns\TextColumn::make('package.name')
                     ->sortable(),
 
+                Tables\Columns\TextColumn::make('username')
+                    ->sortable()
+                    ->searchable()
+                    ->getStateUsing(function ($record) {
+                        return $record->username ?? 'Not used yet';
+                    }),
+
                 Tables\Columns\TextColumn::make('key')
                     ->sortable(),
             ])

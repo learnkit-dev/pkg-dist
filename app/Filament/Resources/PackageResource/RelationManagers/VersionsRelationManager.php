@@ -87,8 +87,8 @@ class VersionsRelationManager extends RelationManager
             ->actions([
                 Tables\Actions\Action::make('sync')
                     ->color('primary')
-                    ->label('Resync')
-                    ->icon('heroicon-o-arrow-path')
+                    ->label('Sync')
+                    ->icon('heroicon-m-arrow-path')
                     ->requiresConfirmation()
                     ->visible(function ($livewire) {
                         return $livewire->pageClass === ViewPackage::class;
