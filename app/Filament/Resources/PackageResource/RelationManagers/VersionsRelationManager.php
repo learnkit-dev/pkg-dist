@@ -82,7 +82,6 @@ class VersionsRelationManager extends RelationManager
                     ->label('Resync')
                     ->icon('heroicon-o-arrow-path')
                     ->requiresConfirmation()
-                    ->visible(fn ($record) => $record->status !== VersionStatus::Syncing)
                     ->action(function ($record) {
                         $executed = RateLimiter::attempt(
                             'resync-' . $record->id,
