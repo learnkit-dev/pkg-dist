@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\VersionStatus;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -12,6 +13,7 @@ class Version extends Model
     protected $guarded = [];
 
     protected $casts = [
+        'status' => VersionStatus::class,
         'json_file' => 'json',
     ];
 

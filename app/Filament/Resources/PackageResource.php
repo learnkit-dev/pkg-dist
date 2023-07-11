@@ -35,7 +35,7 @@ class PackageResource extends Resource
                                 $set('slug', Str::of($get('name'))->slug());
                             }),
                         Forms\Components\TextInput::make('slug')
-                            ->unique('packages', 'slug')
+                            ->unique('packages', 'slug', fn ($record) => $record)
                             ->required(),
                         Forms\Components\TextInput::make('package_name'),
                     ]),

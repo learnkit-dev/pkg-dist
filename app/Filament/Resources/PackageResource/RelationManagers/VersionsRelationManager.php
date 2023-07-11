@@ -2,7 +2,8 @@
 
 namespace App\Filament\Resources\PackageResource\RelationManagers;
 
-use App\Filament\Actions\SelectBranch;
+use App\Enums\VersionStatus;
+//use App\Filament\Actions\SelectBranch;
 use App\Filament\Actions\SelectVersion;
 use App\Jobs\DownloadReleaseForRepoJob;
 use Composer\Semver\VersionParser;
@@ -12,6 +13,7 @@ use Filament\Notifications\Notification;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Support\Facades\RateLimiter;
 
 class VersionsRelationManager extends RelationManager
 {
@@ -32,8 +34,10 @@ class VersionsRelationManager extends RelationManager
     public function table(Table $table): Table
     {
         return $table
+            ->poll('10s')
             ->columns([
                 Tables\Columns\TextColumn::make('version'),
+                Tables\Columns\TextColumn::make('status'),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Imported')
                     ->since(),
@@ -46,34 +50,24 @@ class VersionsRelationManager extends RelationManager
                     ->label('Add version')
                     ->modalWidth('md')
                     ->form([
-                        Forms\Components\Radio::make('type')
-                            ->default('tag')
-                            ->reactive()
-                            ->options([
-                                'tag' => 'Release',
-                                'branch' => 'Branch',
-                            ]),
                         SelectVersion::make('tag')
-                            ->visible(fn ($get) => $get('type') === 'tag')
                             ->required()
                             ->label('Tag'),
-                        SelectBranch::make('branch')
-                            ->visible(fn ($get) => $get('type') === 'branch')
-                            ->required()
-                            ->label('Branch'),
                     ])
                     ->action(function ($data) {
-                        $tag = $data['tag'] ?? null;
-
-                        if ($data['type'] === 'branch') {
+                        /*if ($data['type'] === 'branch') {
                             $tag = (new VersionParser)->normalizeBranch($data['branch']);
-                        }
+                        }*/
 
-                        if ($data['type'] === 'tag') {
-                            $tag = (new VersionParser)->normalize($data['tag']);
-                        }
+                        $tag = (new VersionParser)->normalize($data['tag']);
 
-                        dispatch(new DownloadReleaseForRepoJob($this->getOwnerRecord(), $tag));
+                        // Create new version for the package and start the download job
+                        $version = $this->getOwnerRecord()->versions()->create([
+                            'version' => $data['tag'],
+                            'version_normalized' => $tag,
+                        ]);
+
+                        dispatch(new DownloadReleaseForRepoJob($this->getOwnerRecord(), $version));
 
                         Notification::make()
                             ->success()
@@ -83,6 +77,39 @@ class VersionsRelationManager extends RelationManager
                     }),
             ])
             ->actions([
+                Tables\Actions\Action::make('sync')
+                    ->color('primary')
+                    ->label('Resync')
+                    ->icon('heroicon-o-arrow-path')
+                    ->requiresConfirmation()
+                    ->visible(fn ($record) => $record->status !== VersionStatus::Syncing)
+                    ->action(function ($record) {
+                        $executed = RateLimiter::attempt(
+                            'resync-' . $record->id,
+                            $perMinute = 1,
+                            function () use ($record) {
+                                $record->update([
+                                    'status' => VersionStatus::Syncing,
+                                ]);
+
+                                dispatch(new DownloadReleaseForRepoJob($record->package, $record));
+
+                                Notification::make()
+                                    ->success()
+                                    ->title('Version')
+                                    ->body('Sync process successfully queued')
+                                    ->send();
+                            },
+                        );
+
+                        if (! $executed) {
+                            Notification::make()
+                                ->danger()
+                                ->title('Version')
+                                ->body('Too many attempts')
+                                ->send();
+                        }
+                    }),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
             ])

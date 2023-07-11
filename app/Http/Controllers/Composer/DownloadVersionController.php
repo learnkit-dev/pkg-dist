@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\License;
 use App\Models\Package;
 use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class DownloadVersionController extends Controller
@@ -16,8 +17,9 @@ class DownloadVersionController extends Controller
 
         $version = base64_decode($version);
 
-        $path = storage_path('/app/repos/' . Str::of($package->name)->replace('/', '_') . '_' . Str::of($version)->replace('.', '-') . '.zip');
+        // Stream the file from R2
+        $filename = Str::of($package->name)->replace('/', '_') . '_' . Str::of($version)->replace('.', '-') . '.zip';
 
-        return response()->file($path);
+        return Storage::disk('r2')->download($filename);
     }
 }
