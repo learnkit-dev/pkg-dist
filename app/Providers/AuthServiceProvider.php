@@ -26,10 +26,22 @@ class AuthServiceProvider extends ServiceProvider
     {
         Auth::viaRequest('license-key', function (Request $request) {
             $key = $request->getPassword();
+            $username = $request->getUser();
 
             $license = License::query()
+                ->active()
                 ->where('key', $key)
                 ->first();
+
+            if (filled($license->username) && $username !== $license->username) {
+                abort(401, 'License holder invalid');
+            }
+
+            if (! filled($license->username) && filled($username)) {
+                $license->update([
+                    'username' => $username,
+                ]);
+            }
 
             abort_unless($license, 401, 'License key invalid');
 

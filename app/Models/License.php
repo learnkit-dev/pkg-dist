@@ -14,9 +14,20 @@ class License extends Model implements Authenticatable
 
     protected $guarded = [];
 
+    protected $casts = [
+        'expires_at' => 'datetime',
+    ];
+
     public function package(): BelongsTo
     {
         return $this->belongsTo(Package::class);
+    }
+
+    public function scopeActive($query)
+    {
+        return $query
+            ->where('expires_at', '>', now())
+            ->where('is_revoked', false);
     }
 
     public static function boot()

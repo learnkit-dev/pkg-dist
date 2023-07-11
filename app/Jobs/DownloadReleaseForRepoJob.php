@@ -53,6 +53,7 @@ class DownloadReleaseForRepoJob implements ShouldQueue
                 ->update([
                     'status' => VersionStatus::Published,
                     'json_file' => $data,
+                    'last_synced_at' => now(),
                 ]);
 
             $this->downloadTarball($package);

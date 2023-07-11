@@ -16,4 +16,9 @@ class EditPackage extends EditRecord
             Actions\DeleteAction::make(),
         ];
     }
+
+    protected function getRedirectUrl(): ?string
+    {
+        return PackageResource::getUrl('view', ['record' => $this->record]);
+    }
 }

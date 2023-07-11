@@ -5,6 +5,7 @@ namespace App\Filament\Resources\PackageResource\RelationManagers;
 use App\Enums\VersionStatus;
 //use App\Filament\Actions\SelectBranch;
 use App\Filament\Actions\SelectVersion;
+use App\Filament\Resources\PackageResource\Pages\ViewPackage;
 use App\Jobs\DownloadReleaseForRepoJob;
 use Composer\Semver\VersionParser;
 use Filament\Forms;
@@ -39,6 +40,9 @@ class VersionsRelationManager extends RelationManager
                 Tables\Columns\TextColumn::make('version'),
                 Tables\Columns\TextColumn::make('status')
                     ->badge(),
+                Tables\Columns\TextColumn::make('last_synced_at')
+                    ->label('Last sync')
+                    ->since(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Imported')
                     ->since(),
@@ -83,6 +87,9 @@ class VersionsRelationManager extends RelationManager
                     ->label('Resync')
                     ->icon('heroicon-o-arrow-path')
                     ->requiresConfirmation()
+                    ->visible(function ($livewire) {
+                        return $livewire->pageClass === ViewPackage::class;
+                    })
                     ->action(function ($record) {
                         $executed = RateLimiter::attempt(
                             'resync-' . $record->id,
