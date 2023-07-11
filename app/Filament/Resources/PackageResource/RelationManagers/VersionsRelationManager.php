@@ -40,6 +40,9 @@ class VersionsRelationManager extends RelationManager
                 Tables\Columns\TextColumn::make('version'),
                 Tables\Columns\TextColumn::make('status')
                     ->badge(),
+                Tables\Columns\TextColumn::make('size')
+                    ->label('Size')
+                    ->formatStateUsing(fn ($state) => formatFilesize($state)),
                 Tables\Columns\TextColumn::make('last_synced_at')
                     ->label('Last sync')
                     ->since(),
