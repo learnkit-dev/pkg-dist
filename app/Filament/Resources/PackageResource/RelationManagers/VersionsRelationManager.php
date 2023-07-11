@@ -8,6 +8,7 @@ use App\Filament\Actions\SelectVersion;
 use App\Filament\Resources\PackageResource\Pages\ViewPackage;
 use App\Jobs\DownloadReleaseForRepoJob;
 use Composer\Semver\VersionParser;
+use Filament\Facades\Filament;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Notifications\Notification;
@@ -57,6 +58,15 @@ class VersionsRelationManager extends RelationManager
                 Tables\Actions\Action::make('add_version')
                     ->label('Import version')
                     ->modalWidth('md')
+                    ->visible(function () {
+                        $team = Filament::getTenant();
+
+                        if (! filled($team->limit_version_per_package)) {
+                            return true;
+                        }
+
+                        return $this->ownerRecord->versions()->count() < $team->limit_version_per_package;
+                    })
                     ->form([
                         SelectVersion::make('tag')
                             ->required()

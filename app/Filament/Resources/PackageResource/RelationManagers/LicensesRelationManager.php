@@ -4,6 +4,7 @@ namespace App\Filament\Resources\PackageResource\RelationManagers;
 
 use App\Enums\ExtendPeriod;
 use App\Filament\Resources\PackageResource\Pages\ViewPackage;
+use Filament\Facades\Filament;
 use Filament\Notifications\Notification;
 use Filament\Tables\Actions\Action;
 use Filament\Forms;
@@ -63,7 +64,16 @@ class LicensesRelationManager extends RelationManager
             ])
             ->headerActions([
                 Tables\Actions\CreateAction::make()
-                    ->modalWidth('md'),
+                    ->modalWidth('md')
+                    ->visible(function () {
+                        $team = Filament::getTenant();
+
+                        if (! filled($team->limit_licenses)) {
+                            return true;
+                        }
+
+                        return $team->licenses()->count() < $team->limit_licenses;
+                    }),
             ])
             ->actions([
                 Action::make('extend')

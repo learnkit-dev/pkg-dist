@@ -29,4 +29,9 @@ class Team extends Model
     {
         return $this->hasManyThrough(Version::class, Package::class);
     }
+
+    public function licenses(): HasManyThrough
+    {
+        return $this->hasManyThrough(License::class, Package::class);
+    }
 }

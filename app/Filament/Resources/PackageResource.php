@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\PackageResource\Pages;
 use App\Filament\Resources\PackageResource\RelationManagers;
 use App\Models\Package;
+use Filament\Facades\Filament;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -78,5 +79,16 @@ class PackageResource extends Resource
             'view' => Pages\ViewPackage::route('/{record}'),
             'edit' => Pages\EditPackage::route('/{record}/edit'),
         ];
+    }
+
+    public static function canCreate(): bool
+    {
+        $team = Filament::getTenant();
+
+        if (! filled($team->limit_packages)) {
+            return true;
+        }
+
+        return $team->packages()->count() < $team->limit_packages;
     }
 }

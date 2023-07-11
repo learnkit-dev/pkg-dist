@@ -33,6 +33,17 @@ class TeamResource extends Resource
                         TextInput::make('name'),
                         TextInput::make('slug'),
                     ]),
+
+                Section::make('Limits')
+                    ->inlineLabel()
+                    ->schema([
+                        TextInput::make('limit_packages')
+                            ->label('Packages'),
+                        TextInput::make('limit_version_per_package')
+                            ->label('Versions per package'),
+                        TextInput::make('limit_licenses')
+                            ->label('Licenses'),
+                    ]),
             ]);
     }
 
