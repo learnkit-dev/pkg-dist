@@ -55,7 +55,7 @@ class VersionsRelationManager extends RelationManager
             ])
             ->headerActions([
                 Tables\Actions\Action::make('add_version')
-                    ->label('Add version')
+                    ->label('Import version')
                     ->modalWidth('md')
                     ->form([
                         SelectVersion::make('tag')
