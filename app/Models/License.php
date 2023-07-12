@@ -26,7 +26,11 @@ class License extends Model implements Authenticatable
     public function scopeActive($query)
     {
         return $query
-            ->where('expires_at', '>', now())
+            ->where(function ($query) {
+                return $query
+                    ->whereNull('expires_at')
+                    ->orWhere('expires_at', '>', now());
+            })
             ->where('is_revoked', false);
     }
 

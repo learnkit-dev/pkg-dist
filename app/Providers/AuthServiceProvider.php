@@ -33,6 +33,8 @@ class AuthServiceProvider extends ServiceProvider
                 ->where('key', $key)
                 ->first();
 
+            abort_unless($license, 401, 'License key invalid');
+
             if (filled($license->username) && $username !== $license->username) {
                 abort(401, 'License holder invalid');
             }
@@ -42,8 +44,6 @@ class AuthServiceProvider extends ServiceProvider
                     'username' => $username,
                 ]);
             }
-
-            abort_unless($license, 401, 'License key invalid');
 
             return $license;
         });
