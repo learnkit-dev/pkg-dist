@@ -91,7 +91,7 @@ class LicensesRelationManager extends RelationManager
 
                         Forms\Components\DateTimePicker::make('custom_date')
                             ->label('Expires at')
-                            ->visible(fn ($get) => $get('type') === 'custom'),
+                            ->visible(fn ($get) => $get('period') === 'custom'),
                     ])
                     ->action(function ($data, $record) {
                         if ($data['period'] === ExtendPeriod::Custom->value) {

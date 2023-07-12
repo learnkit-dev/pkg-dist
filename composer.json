@@ -11,7 +11,7 @@
         "php": "^8.1",
         "composer/composer": "2.6.x-dev",
         "composer/semver": "^3.3",
-        "filament/filament": "v3.0.0-alpha122",
+        "filament/filament": "v3.0.0-alpha124",
         "guzzlehttp/guzzle": "^7.2",
         "laravel/framework": "^10.10",
         "laravel/horizon": "*",
