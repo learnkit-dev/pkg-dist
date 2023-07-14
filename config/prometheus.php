@@ -15,7 +15,7 @@ return [
      * When set to `null` all IP's are allowed.
      */
     'allowed_ips' => [
-        null,
+        // '1.2.3.4',
     ],
 
     /*
