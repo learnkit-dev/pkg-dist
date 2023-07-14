@@ -20,6 +20,7 @@
         "league/flysystem-aws-s3-v3": "^3.0",
         "sentry/sentry-laravel": "3.x-dev",
         "socialiteproviders/github": "dev-master",
+        "spatie/laravel-prometheus": "dev-main",
         "spatie/laravel-ray": "^1.32"
     },
     "require-dev": {
