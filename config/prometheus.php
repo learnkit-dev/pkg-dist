@@ -14,7 +14,9 @@ return [
      * Only these IP's will be allowed to visit the above urls.
      * When set to `null` all IP's are allowed.
      */
-    'allowed_ips' => null,
+    'allowed_ips' => [
+        null,
+    ],
 
     /*
      * This is the default namespace that will be
