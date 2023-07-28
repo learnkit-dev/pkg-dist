@@ -21,7 +21,8 @@
         "sentry/sentry-laravel": "3.x-dev",
         "socialiteproviders/github": "dev-master",
         "spatie/laravel-prometheus": "dev-main",
-        "spatie/laravel-ray": "^1.32"
+        "spatie/laravel-ray": "^1.32",
+        "statview/satellite": "dev-main"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9.1",
