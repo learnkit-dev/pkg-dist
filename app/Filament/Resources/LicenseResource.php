@@ -8,6 +8,9 @@ use App\Models\License;
 use Filament\Facades\Filament;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Infolists\Components\Section;
+use Filament\Infolists\Components\TextEntry;
+use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -43,6 +46,21 @@ class LicenseResource extends Resource
                         Forms\Components\TextInput::make('key')
                             ->disabled()
                             ->label('Key'),
+                    ]),
+            ]);
+    }
+
+    public static function infolist(Infolist $infolist): Infolist
+    {
+        return $infolist
+            ->schema([
+                Section::make('General')
+                    ->columns()
+                    ->schema([
+                        TextEntry::make('package.name'),
+                        TextEntry::make('key')
+                            ->copyable()
+                            ->icon('heroicon-o-clipboard-document-list'),
                     ]),
             ]);
     }

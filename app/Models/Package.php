@@ -24,4 +24,13 @@ class Package extends Model
     {
         return $this->belongsTo(Team::class);
     }
+
+    public function getAddRepositoryCommand(): ?string
+    {
+        $url = route('composer.home', ['package' => $this]);
+
+        $packageName = $this->package_name;
+
+        return "composer config repositories.$packageName composer $url";
+    }
 }

@@ -8,6 +8,10 @@ use App\Models\Package;
 use Filament\Facades\Filament;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Infolists\Components\Grid;
+use Filament\Infolists\Components\Section;
+use Filament\Infolists\Components\TextEntry;
+use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -39,6 +43,34 @@ class PackageResource extends Resource
                             ->unique('packages', 'slug', fn ($record) => $record)
                             ->required(),
                         Forms\Components\TextInput::make('package_name'),
+                    ]),
+            ]);
+    }
+
+    public static function infolist(Infolist $infolist): Infolist
+    {
+        return $infolist
+            ->schema([
+                Grid::make()
+                    ->columns(4)
+                    ->schema([
+                        Section::make('General')
+                            ->columnSpan(2)
+                            ->columns()
+                            ->schema([
+                                TextEntry::make('name'),
+                                TextEntry::make('slug'),
+                                TextEntry::make('package_name'),
+                            ]),
+
+                        Section::make('Instructions')
+                            ->columnSpan(2)
+                            ->schema([
+                                TextEntry::make('add_repo')
+                                    ->copyable()
+                                    ->icon('heroicon-o-clipboard-document-list')
+                                    ->getStateUsing(fn (?Package $record) => $record->getAddRepositoryCommand()),
+                            ]),
                     ]),
             ]);
     }

@@ -36,6 +36,7 @@ class AppPanelProvider extends PanelProvider
             ->colors([
                 'primary' => Color::Green,
             ])
+            ->collapsibleNavigationGroups(false)
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->registration()
