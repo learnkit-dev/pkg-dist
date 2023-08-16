@@ -36,7 +36,7 @@ class VersionsRelationManager extends RelationManager
     public function table(Table $table): Table
     {
         return $table
-            ->poll('10s')
+            ->poll()
             ->columns([
                 Tables\Columns\TextColumn::make('version'),
                 Tables\Columns\TextColumn::make('status')
@@ -48,9 +48,11 @@ class VersionsRelationManager extends RelationManager
                     ->label('Last sync')
                     ->since(),
                 Tables\Columns\TextColumn::make('created_at')
+                    ->sortable()
                     ->label('Imported')
                     ->since(),
             ])
+            ->defaultSort('created_at', 'desc')
             ->filters([
                 //
             ])
